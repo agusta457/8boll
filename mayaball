@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular - Ing. Civil en Biotecnología USACH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9e8e8, #f5f0e6);
+            color: #5c3a3a;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #8a1c1c;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a85c5c;
+        }
+
+        .instructions {
+            background: #fffaf0;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #d44a4a;
+        }
+
+        .semester-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .semester {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .semester:hover {
+            transform: translateY(-5px);
+        }
+
+        .semester-title {
+            text-align: center;
+            background: #d44a4a;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            margin: -20px -20px 20px -20px;
+            font-weight: 500;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-list {
+            display: grid;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .course {
+            background: #f8f4d7;  /* Cambiado a crema más amarillento */
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .course:hover {
+            background: #f8e2e2;
+            border-color: #d44a4a;
+            transform: scale(1.02);
+        }
+
+        .course h3 {
+            color: #8a1c1c;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .course p {
+            font-size: 0.9rem;
+            color: #7d5d5d;
+            margin-bottom: 5px;
+        }
+
+        .prerequisites {
+            font-size: 0.85rem;
+            color: #a85c5c;
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .course.completed {
+            background: #d44a4a;
+            color: white;
+            text-decoration: line-through;
+        }
+
+        .course.completed h3 {
+            color: white;
+        }
+
+        .course.completed p {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .course.completed .prerequisites {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .course.locked {
+            background: #e0d6c8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .course.locked:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 40px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+
+        .available {
+            background: #f8f4d7;  /* Color crema amarillento */
+        }
+
+        .completed-legend {
+            background: #d44a4a;
+        }
+
+        .locked-legend {
+            background: #e0d6c8;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 12px 30px;
+            background: #8a1c1c;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(138, 28, 28, 0.3);
+        }
+
+        .reset-btn:hover {
+            background: #6e1515;
+            transform: translateY(-3px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #a85c5c;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .semester-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Malla Curricular - Ingeniería Civil en Biotecnología</h1>
+            <div class="subtitle">Universidad de Santiago de Chile (USACH)</div>
+        </header>
+        
+        <div class="instructions">
+            <p><strong>Instrucciones:</strong> Haz clic en los cursos para marcarlos como completados. Los cursos con prerrequisitos se desbloquearán automáticamente cuando completes sus requisitos previos.</p>
+        </div>
+        
+        <div class="semester-container">
+            <!-- Semestre 1 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 1</div>
+                <div class="course-list">
+                    <div class="course" data-id="1" data-prerequisites="">
+                        <h3>Cálculo 1</h3>
+                        <p>Código: 10138</p>
+                    </div>
+                    <div class="course" data-id="2" data-prerequisites="">
+                        <h3>Álgebra 1</h3>
+                        <p>Código: 10139</p>
+                    </div>
+                    <div class="course" data-id="3" data-prerequisites="">
+                        <h3>Química General</h3>
+                        <p>Código: 10149</p>
+                    </div>
+                    <div class="course" data-id="4" data-prerequisites="">
+                        <h3>Física 1</h3>
+                        <p>Código: 10140</p>
+                    </div>
+                    <div class="course" data-id="5" data-prerequisites="">
+                        <h3>Introducción al diseño en ingeniería</h3>
+                        <p>Código: 10141</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 2 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 2</div>
+                <div class="course-list">
+                    <div class="course" data-id="6" data-prerequisites="1">
+                        <h3>Cálculo 2</h3>
+                        <p>Código: 10142</p>
+                       
+                    </div>
+                    <div class="course" data-id="7" data-prerequisites="2">
+                        <h3>Álgebra 2</h3>
+                        <p>Código: 10143</p>
+                       
+                    </div>
+                    <div class="course" data-id="8" data-prerequisites="4">
+                        <h3>Física 2</h3>
+                        <p>Código: 10144</p>
+                       
+                    </div>
+                    <div class="course" data-id="9" data-prerequisites="5">
+                        <h3>Fundamentos de programación</h3>
+                        <p>Código: 10145</p>
+                    </div>
+                    <div class="course" data-id="10" data-prerequisites="5">
+                        <h3>Fundamentos de ingeniería en biotecnología</h3>
+                        <p>Código: 95101</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 3 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 3</div>
+                <div class="course-list">
+                    <div class="course" data-id="11" data-prerequisites="6">
+                        <h3>Cálculo Avanzado</h3>
+                        <p>Código: 10160</p>
+                      
+                    </div>
+                    <div class="course" data-id="12" data-prerequisites="6,8">
+                        <h3>Fisicoquímica 1</h3>
+                        <p>Código: 95105</p>
+                       
+                    </div>
+                    <div class="course" data-id="13" data-prerequisites="6">
+                        <h3>Análisis estadístico</h3>
+                        <p>Código: 10158</p>
+                        
+                    </div>
+                    <div class="course" data-id="14" data-prerequisites="1">
+                        <h3>Fundamentos de economía</h3>
+                        <p>Código: 10157</p>
+                        
+                    </div>
+                    <div class="course" data-id="15" data-prerequisites="6,8">
+                        <h3>Electricidad y magnetismo</h3>
+                        <p>Código: 10156</p>
+                    </div>
+                    <div class="course" data-id="16" data-prerequisites="3">
+                        <h3>Técnicas de laboratorio</h3>
+                        <p>Código: 95106</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 4 --> 
+            <div class="semester">
+                <div class="semester-title">Semestre 4</div>
+                <div class="course-list">
+                    <div class="course" data-id="17" data-prerequisites="6,7">
+                        <h3>Ecuaciones diferenciales</h3>
+                        <p>Código: 10155</p>
+                       
+                    </div>
+                    <div class="course" data-id="18" data-prerequisites="12">
+                        <h3>Fisicoquímica 2</h3>
+                        <p>Código: 95110</p>
+                        
+                    </div>
+                    <div class="course" data-id="19" data-prerequisites="14">
+                        <h3>Taller de diseño</h3>
+                        <p>Código: 10148</p>
+                        
+                    </div>
+                    <div class="course" data-id="20" data-prerequisites="11,12">
+                        <h3>Balances de materia y energía</h3>
+                        <p>Código: 95108</p>
+                        
+                    </div>
+                    <div class="course" data-id="21" data-prerequisites="16">
+                        <h3>Química orgánica 1</h3>
+                        <p>Código: 95109</p>
+                    </div>
+                    <div class="course" data-id="22" data-prerequisites="">
+                        <h3>Inglés 1</h3>
+                        <p>Código: 10130</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 5 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 5</div>
+                <div class="course-list">
+                    <div class="course" data-id="23" data-prerequisites="8,9,20">
+                        <h3>Métodos de cálculo</h3>
+                        <p>Código: 95115</p>
+                    </div>
+                    <div class="course" data-id="24" data-prerequisites="21">
+                        <h3>Bioquímica</h3>
+                        <p>Código: 95112</p>
+                    </div>
+                    <div class="course" data-id="25" data-prerequisites="14">
+                        <h3>Finanzas</h3>
+                        <p>Código: 10162</p>
+                    </div>
+                    <div class="course" data-id="26" data-prerequisites="18,20">
+                        <h3>Termodinámica</h3>
+                        <p>Código: 95111</p>
+                    </div>
+                    <div class="course" data-id="27" data-prerequisites="21">
+                        <h3>Química orgánica 2</h3>
+                        <p>Código: 95113</p>
+                    </div>
+                    <div class="course" data-id="28" data-prerequisites="22">
+                        <h3>Inglés 2</h3>
+                        <p>Código: 10131</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 6 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 6</div>
+                <div class="course-list">
+                    <div class="course" data-id="29" data-prerequisites="17,26">
+                        <h3>Fenómenos de transporte</h3>
+                        <p>Código: 95116</p>
+                    </div>
+                    <div class="course" data-id="30" data-prerequisites="24">
+                        <h3>Biología celular</h3>
+                        <p>Código: 95117</p>
+                    </div>
+                    <div class="course" data-id="31" data-prerequisites="25">
+                        <h3>Administración de empresas</h3>
+                        <p>Código: 10161</p>
+                    </div>
+                    <div class="course" data-id="32" data-prerequisites="27">
+                        <h3>Microbiología</h3>
+                        <p>Código: 95118</p>
+                    </div>
+                    <div class="course" data-id="33" data-prerequisites="19">
+                        <h3>Taller de innovación y emprendimiento</h3>
+                        <p>Código: 95120</p>
+                    </div>
+                    <div class="course" data-id="34" data-prerequisites="28">
+                        <h3>Inglés 3</h3>
+                        <p>Código: 10132</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 7 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 7</div>
+                <div class="course-list">
+                    <div class="course" data-id="35" data-prerequisites="29">
+                        <h3>Mecánica de fluidos</h3>
+                        <p>Código: 95121</p>
+                    </div>
+                    <div class="course" data-id="36" data-prerequisites="30">
+                        <h3>Biología molecular</h3>
+                        <p>Código: 95123</p>
+                    </div>
+                    <div class="course" data-id="37" data-prerequisites="31">
+                        <h3>Ingeniería económica</h3>
+                        <p>Código: 95124</p>
+                    </div>
+                    <div class="course" data-id="38" data-prerequisites="29">
+                        <h3>Transferencia de calor</h3>
+                        <p>Código: 95122</p>
+                    </div>
+                    <div class="course" data-id="39" data-prerequisites="34">
+                        <h3>Inglés 4</h3>
+                        <p>Código: 10133</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 8 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 8</div>
+                <div class="course-list">
+                    <div class="course" data-id="40" data-prerequisites="36">
+                        <h3>Ingeniería genética</h3>
+                        <p>Código: 95127</p>
+                    </div>
+                    <div class="course" data-id="41" data-prerequisites="35,38">
+                        <h3>Diseño de reactores</h3>
+                        <p>Código: 95126</p>
+                    </div>
+                    <div class="course" data-id="42" data-prerequisites="35,38">
+                        <h3>Transferencia de masa</h3>
+                        <p>Código: 95125</p>
+                    </div>
+                    <div class="course" data-id="43" data-prerequisites="35,38">
+                        <h3>Electivo 1</h3>
+                        <p>Código: 95128</p>
+                    </div>
+                    <div class="course" data-id="44" data-prerequisites="36,38">
+                        <h3>Electivo 2</h3>
+                        <p>Código: 95129</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 9 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 9</div>
+                <div class="course-list">
+                    <div class="course" data-id="45" data-prerequisites="42">
+                        <h3>Procesos de bioseparación</h3>
+                        <p>Código: 95130</p>
+                    </div>
+                    <div class="course" data-id="46" data-prerequisites="41">
+                        <h3>Diseño de bioreactores</h3>
+                        <p>Código: 95131</p>
+                    </div>
+                    <div class="course" data-id="47" data-prerequisites="40">
+                        <h3>Ingeniería metabólica y bioinformática</h3>
+                        <p>Código: 95132</p>
+                    </div>
+                    <div class="course" data-id="48" data-prerequisites="42">
+                        <h3>Simulación de procesos</h3>
+                        <p>Código: 95133</p>
+                    </div>
+                    <div class="course" data-id="49" data-prerequisites="13,23">
+                        <h3>Diseño experimental</h3>
+                        <p>Código: 95134</p>
+                    </div>
+                    <div class="course" data-id="50" data-prerequisites="37,42">
+                        <h3>Evaluación de proyectos</h3>
+                        <p>Código: 95135</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 10 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 10</div>
+                <div class="course-list">
+                    <div class="course" data-id="51" data-prerequisites="48">
+                        <h3>Proyectos</h3>
+                        <p>Código: 95136</p>
+                    </div>
+                    <div class="course" data-id="52" data-prerequisites="45">
+                        <h3>Planta piloto de bioprocesos</h3>
+                        <p>Código: 95137</p>
+                    </div>
+                    <div class="course" data-id="53" data-prerequisites="45,49">
+                        <h3>Dinámica y control de procesos</h3>
+                        <p>Código: 95138</p>
+                    </div>
+                    <div class="course" data-id="54" data-prerequisites="44">
+                        <h3>Electivo 3</h3>
+                        <p>Código: 95139</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semestre 11 -->
+            <div class="semester">
+                <div class="semester-title">Semestre 11</div>
+                <div class="course-list">
+                    <div class="course" data-id="55" data-prerequisites="51,54">
+                        <h3>Trabajo de titulación</h3>
+                        <p>Código: 95140</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="reset-btn" id="resetButton">Reiniciar Progreso</button>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color available"></div>
+                <span>Disponible</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color completed-legend"></div>
+                <span>Completado</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color locked-legend"></div>
+                <span>Bloqueado (requisitos pendientes)</span>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Malla curricular para Ingeniería Civil en Biotecnología - Universidad de Santiago de Chile</p>
+            <p>© 2025 - Diseño Interactivo</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Estado de los cursos (completados o no)
+            const completedCourses = JSON.parse(localStorage.getItem('completedCourses')) || {};
+            
+            // Botón de reinicio
+            const resetButton = document.getElementById('resetButton');
+            resetButton.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que deseas reiniciar todo tu progreso?')) {
+                    localStorage.removeItem('completedCourses');
+                    location.reload();
+                }
+            });
+            
+            // Función para verificar prerrequisitos
+            function checkPrerequisites(courseElement) {
+                const prerequisites = courseElement.getAttribute('data-prerequisites');
+                if (!prerequisites) return true;
+                
+                const prereqIds = prerequisites.split(',').map(id => id.trim());
+                return prereqIds.every(id => completedCourses[id] === true);
+            }
+            
+            // Función para actualizar el estado de todos los cursos
+            function updateAllCourses() {
+                document.querySelectorAll('.course').forEach(course => {
+                    const courseId = course.getAttribute('data-id');
+                    
+                    // Actualizar estado completado
+                    if (completedCourses[courseId]) {
+                        course.classList.add('completed');
+                    } else {
+                        course.classList.remove('completed');
+                    }
+                    
+                    // Actualizar estado bloqueado
+                    if (!completedCourses[courseId] && !checkPrerequisites(course)) {
+                        course.classList.add('locked');
+                    } else {
+                        course.classList.remove('locked');
+                    }
+                });
+            }
+            
+            // Manejar clic en los cursos
+            document.querySelectorAll('.course').forEach(course => {
+                course.addEventListener('click', function() {
+                    // Ignorar cursos bloqueados
+                    if (this.classList.contains('locked')) return;
+                    
+                    const courseId = this.getAttribute('data-id');
+                    
+                    // Alternar estado completado
+                    completedCourses[courseId] = !completedCourses[courseId];
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('completedCourses', JSON.stringify(completedCourses));
+                    
+                    // Actualizar interfaz
+                    updateAllCourses();
+                });
+            });
+            
+            // Inicializar interfaz
+            updateAllCourses();
+        });
+    </script>
+</body>
+</html>
